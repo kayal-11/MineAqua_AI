@@ -12,9 +12,10 @@ export const DashboardPage = () => {
   const [sensorData, setSensorData] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+  const [mode, setMode] = useState('DEMO_MODE');
 
   const loadDashboardData = async () => {
-    setLoading(true);
     const hours = timeRange === '1H' ? 1 : timeRange === '6H' ? 6 : timeRange === '24H' ? 24 : 168;
     
     const [sensors, history] = await Promise.all([
@@ -24,18 +25,22 @@ export const DashboardPage = () => {
 
     setSensorData(sensors.readings);
     setHistoryData(history.data);
+    setIsLive(Boolean(sensors.is_live || sensors.mode === 'LIVE_MODE'));
+    setMode(sensors.mode || 'DEMO_MODE');
     setLoading(false);
   };
 
   useEffect(() => {
     loadDashboardData();
+    const interval = setInterval(loadDashboardData, 4000);
+    return () => clearInterval(interval);
   }, [timeRange]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Prominent Demo Banner */}
-      <DemoBadge variant="banner" text="DEMO DATA — Replace with ESP32 sensor readings during hardware integration." />
+      {/* Prominent Mode Banner */}
+      <DemoBadge variant="banner" isLive={isLive} mode={mode} />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -44,9 +49,11 @@ export const DashboardPage = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               MineAqua AI — Live Water Monitoring
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              System Online
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+              isLive ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-amber-50 text-amber-800 border border-amber-200'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              {isLive ? 'LIVE ESP32 Stream' : 'System Online (Demo)'}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
@@ -98,7 +105,7 @@ export const DashboardPage = () => {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-slate-900 text-lg">Sensor Quality Telemetry Trends</h3>
-              <DemoBadge variant="badge" />
+              <DemoBadge variant="badge" isLive={isLive} mode={mode} />
             </div>
             <p className="text-xs text-slate-500">Historical trend charts for pH, TDS, and Turbidity over selected timeframe.</p>
           </div>

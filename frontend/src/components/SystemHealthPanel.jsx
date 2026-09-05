@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Activity, Zap, Eye, RotateCw, ToggleRight, Filter, ShieldCheck, Sun, BatteryCharging, CheckCircle, AlertCircle } from 'lucide-react';
+import { Cpu, Activity, Zap, Eye, RotateCw, ToggleRight, Filter, ShieldCheck, Sun, BatteryCharging } from 'lucide-react';
 import DemoBadge from './DemoBadge';
 
 const iconMap = {
@@ -15,20 +15,22 @@ const iconMap = {
   BatteryCharging
 };
 
-export const SystemHealthPanel = ({ components = [] }) => {
+export const SystemHealthPanel = ({ components = [], isLive = false, mode = "DEMO_MODE" }) => {
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-slate-900 text-lg">System Hardware Status</h3>
-            <DemoBadge variant="badge" />
+            <DemoBadge variant="badge" isLive={isLive} mode={mode} />
           </div>
           <p className="text-xs text-slate-500">Real-time status of embedded sensors, actuators, and solar modules.</p>
         </div>
-        <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Hardware Layer Online
+        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${
+          isLive ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-50 text-slate-700 border-slate-200'
+        }`}>
+          <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+          {isLive ? 'Hardware Layer LIVE Stream' : 'Hardware Layer Standby'}
         </span>
       </div>
 

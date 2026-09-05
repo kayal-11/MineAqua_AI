@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { History as HistoryIcon, Search, Filter, Calendar, CheckCircle2, AlertTriangle, ShieldAlert, RefreshCw } from 'lucide-react';
 import DemoBadge from '../components/DemoBadge';
+import { fetchSensorHistory } from '../services/api';
 
 export const HistoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRisk, setFilterRisk] = useState('ALL');
+  const [logs, setLogs] = useState([]);
+  const [isLive, setIsLive] = useState(false);
+  const [mode, setMode] = useState('DEMO_MODE');
 
-  const historyLogs = [
+  const defaultHistoryLogs = [
     {
       id: "LOG-908",
       dateTime: "2026-09-01 11:30 AM",
@@ -93,7 +97,25 @@ export const HistoryPage = () => {
     }
   ];
 
-  const filteredLogs = historyLogs.filter(log => {
+  const loadHistory = async () => {
+    const res = await fetchSensorHistory(24);
+    setIsLive(Boolean(res?.is_live || res?.mode === 'LIVE_MODE'));
+    setMode(res?.mode || 'DEMO_MODE');
+
+    if (res?.live_logs && res.live_logs.length > 0) {
+      setLogs([...res.live_logs, ...defaultHistoryLogs]);
+    } else {
+      setLogs(defaultHistoryLogs);
+    }
+  };
+
+  useEffect(() => {
+    loadHistory();
+    const interval = setInterval(loadHistory, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const filteredLogs = logs.filter(log => {
     const matchesRisk = filterRisk === 'ALL' || log.riskLevel === filterRisk;
     const matchesSearch = 
       log.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -131,8 +153,8 @@ export const HistoryPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Prominent Demo Banner */}
-      <DemoBadge variant="banner" text="DEMO DATA — All historical logs below are simulated telemetry for UI demonstration." />
+      {/* Prominent Mode Banner */}
+      <DemoBadge variant="banner" isLive={isLive} mode={mode} />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

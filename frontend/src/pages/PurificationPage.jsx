@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Filter, ShieldCheck, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight, ArrowDown, ShieldAlert, Cpu, Activity, Droplets, Info, Check, AlertCircle 
 } from 'lucide-react';
 import DemoBadge from '../components/DemoBadge';
+import { fetchHardwareStatus } from '../services/api';
 
 export const PurificationPage = () => {
   const [selectedRiskScenario, setSelectedRiskScenario] = useState('LOW');
   const [verificationResult, setVerificationResult] = useState('PASS');
+  const [isLive, setIsLive] = useState(false);
+  const [mode, setMode] = useState('DEMO_MODE');
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      const res = await fetchHardwareStatus();
+      setIsLive(Boolean(res?.is_connected || res?.mode === 'LIVE_MODE'));
+      setMode(res?.mode || 'DEMO_MODE');
+    };
+    checkStatus();
+    const interval = setInterval(checkStatus, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Prominent Demo Mode Banner */}
-      <DemoBadge variant="banner" text="DEMO MODE — Water purification pathways and post-verification values are simulated demonstration data." />
+      {/* Prominent Mode Banner */}
+      <DemoBadge variant="banner" isLive={isLive} mode={mode} />
 
       {/* Main Page Title & Intro */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
@@ -27,9 +41,7 @@ export const PurificationPage = () => {
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Purification That Adapts to the Risk
                   </h1>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                    DEMO MODE
-                  </span>
+                  <DemoBadge variant="badge" isLive={isLive} mode={mode} />
                 </div>
                 <p className="text-sm font-medium text-slate-600 mt-1 max-w-3xl leading-relaxed">
                   Instead of following a single fixed treatment path, MineAqua AI is designed to select the required purification process based on the assessed water risk.

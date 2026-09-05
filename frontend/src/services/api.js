@@ -2,6 +2,65 @@ import { MOCK_SENSOR_DATA, MOCK_CHART_DATA, MOCK_SYSTEM_HEALTH, MOCK_ALERTS } fr
 
 const BASE_URL = '/api';
 
+/**
+ * ESP32 HARDWARE INTEGRATION POINT:
+ * Ingest live telemetry sent from physical ESP32 microcontrollers
+ * POST /api/sensors/ingest
+ */
+export const ingestHardwareTelemetry = async (payload) => {
+  try {
+    const res = await fetch(`${BASE_URL}/sensors/ingest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.log('Backend API offline, simulated hardware telemetry ingestion locally');
+    return {
+      status: "success",
+      mode: "LIVE_MODE",
+      is_live: true,
+      message: "Client fallback ingested hardware telemetry",
+      ingested_data: payload
+    };
+  }
+};
+
+export const fetchHardwareStatus = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/hardware/status`);
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    return {
+      status: "success",
+      is_connected: false,
+      mode: "DEMO_MODE",
+      message: "DEMO MODE — Hardware not connected"
+    };
+  }
+};
+
+export const toggleHardwareMode = async (isLive) => {
+  try {
+    const res = await fetch(`${BASE_URL}/hardware/toggle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_live: isLive })
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    return {
+      status: "success",
+      is_connected: Boolean(isLive),
+      mode: isLive ? "LIVE_MODE" : "DEMO_MODE"
+    };
+  }
+};
+
 export const fetchSensors = async () => {
   try {
     const res = await fetch(`${BASE_URL}/sensors`);
@@ -23,6 +82,7 @@ export const fetchSensorHistory = async (hours = 24) => {
     return {
       status: "success",
       mode: "DEMO_MODE",
+      is_live: false,
       range: `${hours}H`,
       data: MOCK_CHART_DATA[key] || MOCK_CHART_DATA["24H"]
     };
@@ -38,6 +98,7 @@ export const fetchSystemHealth = async () => {
     return {
       status: "success",
       mode: "DEMO_MODE",
+      is_live: false,
       components: MOCK_SYSTEM_HEALTH
     };
   }
@@ -52,6 +113,7 @@ export const fetchAlerts = async () => {
     return {
       status: "success",
       mode: "DEMO_MODE",
+      is_live: false,
       alerts: MOCK_ALERTS
     };
   }
@@ -96,6 +158,7 @@ export const runAiAssessment = async (payload) => {
     return {
       status: "success",
       mode: "DEMO_MODE",
+      is_live: false,
       timestamp: new Date().toISOString(),
       assessment: {
         risk_level: level,

@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, Activity, Filter, Cpu, History, User, Settings, Menu, X, Droplet, ShieldAlert, LogIn, UserCheck
+  Home, Activity, Filter, Cpu, History, User, Settings, Menu, X, Droplet, ShieldAlert, LogIn, UserCheck, Radio
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchHardwareStatus } from '../services/api';
 
 export const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLiveMode, setIsLiveMode] = useState(false);
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      const res = await fetchHardwareStatus();
+      setIsLiveMode(res?.is_connected || res?.mode === "LIVE_MODE");
+    };
+    checkStatus();
+    const interval = setInterval(checkStatus, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
@@ -187,15 +199,27 @@ export const Sidebar = () => {
           </div>
 
           <div className="pt-2 border-t border-slate-700/60">
-            <div className="p-2 rounded-xl bg-amber-950/50 border border-amber-800/60 text-amber-300 text-[10px] leading-snug space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-amber-400">
-                <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
-                <span>DEMO MODE</span>
+            {isLiveMode ? (
+              <div className="p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-[10px] leading-snug space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+                  <Radio className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+                  <span>LIVE MODE</span>
+                </div>
+                <p className="text-emerald-200/90 text-[10px]">
+                  Physical ESP32 hardware & sensors connected.
+                </p>
               </div>
-              <p className="text-amber-200/90 text-[10px]">
-                Sensor values are simulated until ESP32 hardware integration.
-              </p>
-            </div>
+            ) : (
+              <div className="p-2 rounded-xl bg-amber-950/50 border border-amber-800/60 text-amber-300 text-[10px] leading-snug space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-amber-400">
+                  <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                  <span>DEMO MODE</span>
+                </div>
+                <p className="text-amber-200/90 text-[10px]">
+                  Sensor values are simulated until ESP32 hardware integration.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </aside>

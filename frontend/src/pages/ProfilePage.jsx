@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, ShieldCheck, Clock, MapPin, LogOut, LogIn, Award } from 'lucide-react';
-import DemoBadge from '../components/DemoBadge';
 
 export const ProfilePage = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -38,8 +37,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      
-      <DemoBadge variant="banner" text="DEMO PROFILE — Signed in as simulated field environmental operator." />
+
 
       {/* Profile Card Header */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">

@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Droplet, Activity, BrainCircuit, Sun, ArrowRight, ShieldCheck, Zap, Battery, Filter, Cpu, CheckCircle2, AlertTriangle, Layers, Award
+  Droplet, Activity, BrainCircuit, Sun, ArrowRight, ShieldCheck, Zap, Battery, Filter, Cpu, CheckCircle2, AlertTriangle, Layers
 } from 'lucide-react';
 import ProcessPipeline from '../components/ProcessPipeline';
-import DemoBadge from '../components/DemoBadge';
 
 export const HomePage = () => {
   return (
@@ -18,13 +17,7 @@ export const HomePage = () => {
             {/* Hero Left Content */}
             <div className="lg:col-span-7 space-y-6">
               
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200">
-                  <Award className="w-3.5 h-3.5 text-cyan-600" />
-                  Smart India Hackathon 2026 • PS 26040
-                </span>
-                <DemoBadge variant="badge" />
-              </div>
+
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Intelligent Water Purification for a <span className="water-gradient-text">Safer Tomorrow</span>

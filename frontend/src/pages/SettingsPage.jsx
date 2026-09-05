@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Settings, Sliders, Bell, Cpu, RefreshCw, Shield, Save, Check } from 'lucide-react';
-import DemoBadge from '../components/DemoBadge';
 
 export const SettingsPage = () => {
   const [telemetryInterval, setTelemetryInterval] = useState('5');
@@ -16,7 +15,7 @@ export const SettingsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <DemoBadge variant="banner" text="DEMO MODE — Configuration settings apply to local simulated telemetry environment." />
+
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -31,8 +30,8 @@ export const SettingsPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
           <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
             <Sliders className="w-4 h-4 text-cyan-600" />
             <span>Telemetry & Sensor Preferences</span>
@@ -59,7 +58,7 @@ export const SettingsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="font-bold text-slate-900 block">Demonstration Simulation Mode</span>
-                  <span className="text-slate-500 block text-[11px]">Generate synthetic ESP32 sensor values for preview</span>
+                  <span className="text-slate-500 block text-[11px]">Generate synthetic ESP32 sensor values when physical hardware is not connected</span>
                 </div>
                 <button
                   type="button"
@@ -85,6 +84,20 @@ export const SettingsPage = () => {
               </div>
             </div>
 
+            {/* ESP32 HARDWARE READY ARCHITECTURE INTEGRATION POINT */}
+            {/* Real ESP32 microcontrollers POST telemetry to /api/sensors/ingest */}
+            <div className="p-4 rounded-xl bg-cyan-950/5 border border-cyan-200/80 space-y-2 text-slate-700">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900 block text-xs">Real-Time Hardware Readiness</span>
+                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300">
+                  ESP32 API Ready
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">
+                When physical ESP32 hardware & sensors transmit data to the API endpoint, system automatically switches from DEMO MODE to LIVE MODE.
+              </p>
+            </div>
+
             <button
               type="submit"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-cyan-700 transition-all shadow-sm"
@@ -102,31 +115,6 @@ export const SettingsPage = () => {
               )}
             </button>
           </form>
-        </div>
-
-        <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 space-y-4 shadow-sm h-fit">
-          <div className="flex items-center gap-2 text-cyan-400">
-            <Cpu className="w-5 h-5" />
-            <h3 className="font-bold text-white text-sm">System Diagnostics</h3>
-          </div>
-          <div className="space-y-2 text-xs text-slate-300">
-            <div className="flex justify-between py-1 border-b border-slate-800">
-              <span className="text-slate-400">Firmware Build</span>
-              <span className="font-bold text-cyan-300">v2.4.0-SIH</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-800">
-              <span className="text-slate-400">AI Model Protocol</span>
-              <span className="font-bold text-emerald-400">MineAqua-Adaptive-v1</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-800">
-              <span className="text-slate-400">Connection</span>
-              <span className="font-bold text-cyan-300">WebSocket / HTTPS</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Hardware Target</span>
-              <span className="font-bold text-amber-300">ESP32 (Simulated)</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
